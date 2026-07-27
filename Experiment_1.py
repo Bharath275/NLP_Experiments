@@ -3,7 +3,6 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 # Download required data
 nltk.download('punkt')
-nltk.download('punkt_tab')The boys wew
 nltk.download('wordnet')
 # User input
 text = input("Enter a sentence: ")
