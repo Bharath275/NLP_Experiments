@@ -19,7 +19,8 @@ tags = pos_tag(tokens)
 print("\nDetected Named Entities:")
 count = 0
 
-for word, tag in tags:0132    if tag == "NNP":559599555 2221323
+for word, tag in tags:
+    if tag == "NNP":
         print(word, "-> ENTITY")
         count += 1
 
@@ -27,7 +28,10 @@ for word, tag in tags:0132    if tag == "NNP":559599555 2221323
 actual = int(input("\nEnter actual number of entities: "))
 
 # Calculate accuracy
-accuracy = (min(count, actual) / max(count, actual)) * 100
+if max(count, actual) == 0:
+    accuracy = 100.0
+else:
+    accuracy = (min(count, actual) / max(count, actual)) * 100
 
 # Display results
 print("\nPredicted Entities:", count)
