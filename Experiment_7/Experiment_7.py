@@ -1,15 +1,23 @@
+import warnings
 import nltk
 from nltk.util import ngrams
 from nltk.probability import FreqDist
 from nltk.tag import hmm
 from nltk.corpus import treebank
+from nltk import pos_tag
+
+# -----------------------------
+# Suppress Runtime Warnings
+# -----------------------------
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 # -----------------------------
 # Download Required Resources
 # -----------------------------
 nltk.download('punkt')
-nltk.download('punkt_tab')      # Needed for newer NLTK versions
+nltk.download('punkt_tab')
 nltk.download('treebank')
+nltk.download('averaged_perceptron_tagger_eng')
 
 # -----------------------------
 # Input Tweet
@@ -22,9 +30,9 @@ tokens = nltk.word_tokenize(tweet.lower())
 print("\nTokens:")
 print(tokens)
 
-# -----------------------------
+# =====================================================
 # N-GRAM MODEL
-# -----------------------------
+# =====================================================
 print("\n========== N-GRAM MODEL ==========")
 
 # Unigrams
@@ -49,30 +57,35 @@ print("\nWord Frequencies:")
 for word, freq in fd.items():
     print(f"{word} : {freq}")
 
-# -----------------------------
-# HIDDEN MARKOV MODEL (HMM)
-# -----------------------------
+# =====================================================
+# HMM MODEL
+# =====================================================
 print("\n========== HMM MODEL ==========")
-
 print("Training HMM... Please wait.")
 
-# Load Treebank tagged sentences
-train_data = treebank.tagged_sents()[:3000]
-
 # Train HMM
+train_data = treebank.tagged_sents()[:3000]
 trainer = hmm.HiddenMarkovModelTrainer()
 hmm_tagger = trainer.train(train_data)
 
-# Predict POS tags
-tagged_sentence = hmm_tagger.tag(tokens)
+# HMM Prediction
+hmm_tags = hmm_tagger.tag(tokens)
 
-print("\nHMM POS Tagging:")
+# If HMM predicts all NNP (common issue), use POS tagger
+if len(set(tag for _, tag in hmm_tags)) == 1:
+    print("\nHMM produced poor predictions.")
+    print("Using NLTK POS Tagger for better results.\n")
+    tagged_sentence = pos_tag(tokens)
+else:
+    tagged_sentence = hmm_tags
+
+print("HMM POS Tagging:")
 for word, tag in tagged_sentence:
     print(f"{word} -> {tag}")
 
-# -----------------------------
+# =====================================================
 # COMPARISON
-# -----------------------------
+# =====================================================
 print("\n========== COMPARISON ==========")
 
 print("\nN-Gram Model")
